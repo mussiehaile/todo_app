@@ -11,7 +11,6 @@ class Task(models.Model):
         return self.title
     
     
-
 class DueDate(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     due_date = models.DateTimeField()
