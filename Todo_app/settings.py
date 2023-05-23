@@ -37,7 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'account'
+    'account',
+    'rest_framework',
+    'task',
+    'djoser'
 ]
 
 MIDDLEWARE = [
@@ -127,4 +130,19 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+DJOSER = {
+    'LOGIN_FIELD': 'email',  # Customize the login field based on your model's field
+    'USER_CREATE_PASSWORD_RETYPE': False,
+    'SERIALIZERS': {
+        'user_create': 'account.serializers.MyUserCreateSerializer',  # Customize the serializer based on your model
+        'user': 'account.serializers.MyUserSerializer',  # Customize the serializer based on your model
+    },
+}
+
 AUTH_USER_MODEL = 'account.MyUser'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
