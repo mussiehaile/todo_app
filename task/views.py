@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view ,permission_classes 
 from django.core.exceptions import PermissionDenied
 from rest_framework.permissions import IsAuthenticated ,AllowAny
+from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from .models import Comment,Task ,DueDate
 from .serializers import TaskSerializer,CommentSerializer ,DueDateSerializer
@@ -12,7 +13,14 @@ from .serializers import TaskSerializer,CommentSerializer ,DueDateSerializer
 def task_list(request):
     
         tasks = Task.objects.all()
-        serializer = TaskSerializer(tasks, many=True)
+        filter_backend = SearchFilter()
+        search_fields = ['title', 'description']  # Specify the fields to search on
+
+    # Apply search filtering
+        filtered_queryset = filter_backend.filter_queryset(request, tasks, view= None)
+    
+        serializer = TaskSerializer(filtered_queryset, many=True)
+        #serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
     
 
