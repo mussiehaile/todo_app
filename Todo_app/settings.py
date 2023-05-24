@@ -135,7 +135,8 @@ DJOSER = {
     'USER_CREATE_PASSWORD_RETYPE': False,
     'SERIALIZERS': {
         'user_create': 'account.serializers.MyUserCreateSerializer',  # Customize the serializer based on your model
-        'user': 'account.serializers.MyUserSerializer',  # Customize the serializer based on your model
+        'user': 'account.serializers.MyUserSerializer', 
+        'ACCESS_TOKEN_LIFETIME': 3600 , # Customize the serializer based on your model
     },
 }
 

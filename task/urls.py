@@ -11,7 +11,8 @@ urlpatterns = [
     path('tasks/<int:pk>/', task_detail, name='task-detail'),
     path('tasks/<int:pk>/update/', task_update, name='task-update'),
     path('tasks/<int:pk>/delete/', task_delete, name='task-delete'),
-    
+
+
     path('t&c/', task_list_with_comments, name='task-list-with-comments'),
     path('tasks/due', task_list_with_comments_and_due_dates, name='task-list'),
     path('com_with_task/', comment_wi_task, name='comment-wi-task'),

@@ -1,4 +1,6 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view ,permission_classes 
+from django.core.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated ,AllowAny
 from rest_framework.response import Response
 from .models import Comment,Task ,DueDate
 from .serializers import TaskSerializer,CommentSerializer ,DueDateSerializer
@@ -6,18 +8,30 @@ from .serializers import TaskSerializer,CommentSerializer ,DueDateSerializer
 
 ## task view
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def task_list(request):
-    tasks = Task.objects.all()
-    serializer = TaskSerializer(tasks, many=True)
-    return Response(serializer.data)
+    
+        tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return Response(serializer.data)
+    
+
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated])
 def task_create(request):
-    serializer = TaskSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
+    if request.user.has_perm('task.add_task'):
+        
+                             
+        serializer = TaskSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+    else:
+        raise PermissionDenied("You do not have permission to access this resource.")
+
+    
 
 @api_view(['GET'])
 def task_detail(request, pk):
@@ -33,6 +47,7 @@ def task_update(request, pk):
         serializer.save()
         return Response(serializer.data)
     return Response(serializer.errors, status=400)
+
 
 @api_view(['DELETE'])
 def task_delete(request, pk):
