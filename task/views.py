@@ -1,6 +1,9 @@
 from rest_framework.decorators import api_view ,permission_classes 
-from django.core.exceptions import PermissionDenied
-from rest_framework.permissions import IsAuthenticated ,AllowAny
+from django.core.exceptions import PermissionDenied 
+from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.decorators import login_required
+from rest_framework.permissions import IsAuthenticated ,AllowAny 
+from django.http import HttpResponse, HttpResponseForbidden
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from .models import Comment,Task ,DueDate
@@ -9,9 +12,11 @@ from .serializers import TaskSerializer,CommentSerializer ,DueDateSerializer
 
 ## task view
 @api_view(['GET'])
-@permission_classes([AllowAny])
+#@permission_classes([AllowAny])
+@permission_required('task.can_view_task')
+#@login_required
 def task_list(request):
-    
+        print('oooooooo')
         tasks = Task.objects.all()
         filter_backend = SearchFilter()
         search_fields = ['title', 'description']  # Specify the fields to search on
@@ -48,6 +53,8 @@ def task_detail(request, pk):
     return Response(serializer.data)
 
 @api_view(['PUT'])
+@login_required
+@permission_required('tasks.can_add_task')
 def task_update(request, pk):
     task = Task.objects.get(pk=pk)
     serializer = TaskSerializer(instance=task, data=request.data)
@@ -58,14 +65,27 @@ def task_update(request, pk):
 
 
 @api_view(['DELETE'])
+#@login_required
+@permission_required('can_delete_task')
 def task_delete(request, pk):
-    task = Task.objects.get(pk=pk)
-    task.delete()
-    return Response(status=204)
+   print('oooooooo')
+   try:
+        task = Task.objects.get(pk=pk)
+        
+        # Check if the user has permission to delete the task
+        if not request.user.has_perm('tasks.can_delete_task'):
+            return HttpResponseForbidden("You are not authorized to delete this task.")
+        
+        task.delete()
+        return HttpResponse("Task deleted successfully.")
+   except Task.DoesNotExist:
+       return HttpResponseNotFound("Task not found.")
 
 ##comment_views 
 
+
 @api_view(['GET'])
+#@login_required
 def comment_list(request):
     comments = Comment.objects.all()
     serializer = CommentSerializer(comments, many=True)

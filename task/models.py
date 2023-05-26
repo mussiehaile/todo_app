@@ -7,6 +7,12 @@ class Task(models.Model):
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     
+    # class Meta:
+    #     permissions = [
+    #         ('can_add_task', 'Can add task'),
+    #         ('can_delete_task', 'Can delete task'),
+    #     ]
+    
     def __str__(self):
         return self.title 
     
