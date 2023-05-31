@@ -1,22 +1,15 @@
 from django.db import models
-from account.models import MyUser
-
+from account.models import UserAccount,UserAccountManager
 class Task(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
-    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    # class Meta:
-    #     permissions = [
-    #         ('can_add_task', 'Can add task'),
-    #         ('can_delete_task', 'Can delete task'),
-    #     ]
     
     def __str__(self):
         return self.title 
-    
-    
+
+
 class DueDate(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     due_date = models.DateTimeField()
@@ -24,6 +17,6 @@ class DueDate(models.Model):
 
 class Comment(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(UserAccount, on_delete=models.CASCADE)
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

@@ -1,16 +1,143 @@
-# serializers.py
+from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
+from django.contrib.auth import get_user_model
+from account.models import UserAccount
 
-from djoser.serializers import UserCreateSerializer, UserSerializer
-from account.models import MyUser  # Replace 'accounts' with your app name
-
-
-class MyUserCreateSerializer(UserCreateSerializer):
-    class Meta(UserCreateSerializer.Meta):
-        model = MyUser
-        fields = ('username','email', 'password', 'first_name', 'last_name')
+User = get_user_model()
 
 
-class MyUserSerializer(UserSerializer):
-    class Meta(UserSerializer.Meta):
-        model = MyUser
-        fields = ('email', 'first_name', 'last_name')
+# class MyUserCreateSerializer(UserCreateSerializer):
+#     class Meta(UserCreateSerializer.Meta):
+#         model = MyUser
+#         fields = ('username','email', 'password', 'first_name', 'last_name')
+
+
+# class MyUserSerializer(UserSerializer):
+#     class Meta(UserSerializer.Meta):
+#         model = MyUser
+#         fields = ('email', 'first_name', 'last_name')
+
+
+class UserCreateSerializer(BaseUserCreateSerializer):
+    class Meta(BaseUserCreateSerializer.Meta):
+        model = UserAccount
+        fields = ['id', 'email', 'username', 'password','is_active','is_superuser','is_staff','is_director','is_vice_director']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# from rest_framework import serializers
+# from .models import UserAccount
+
+# class UserAccountSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = UserAccount
+#         fields = ['id', 'email', 'username', 'is_active', 'is_superuser', 'is_staff', 'is_director', 'is_vice_director']
+#         read_only_fields = ['id']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# from djoser.serializers import UserCreateSerializer, UserSerializer
+# from account.models import MyUser  # Replace 'accounts' with your app name
+

@@ -12,9 +12,6 @@ from .serializers import TaskSerializer,CommentSerializer ,DueDateSerializer
 
 ## task view
 @api_view(['GET'])
-#@permission_classes([AllowAny])
-@permission_required('task.can_view_task')
-#@login_required
 def task_list(request):
         print('oooooooo')
         tasks = Task.objects.all()
@@ -31,7 +28,6 @@ def task_list(request):
 
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
 def task_create(request):
     if request.user.has_perm('task.add_task'):
         
@@ -54,7 +50,6 @@ def task_detail(request, pk):
 
 @api_view(['PUT'])
 @login_required
-@permission_required('tasks.can_add_task')
 def task_update(request, pk):
     task = Task.objects.get(pk=pk)
     serializer = TaskSerializer(instance=task, data=request.data)
@@ -65,8 +60,6 @@ def task_update(request, pk):
 
 
 @api_view(['DELETE'])
-#@login_required
-@permission_required('can_delete_task')
 def task_delete(request, pk):
    print('oooooooo')
    try:
@@ -85,7 +78,6 @@ def task_delete(request, pk):
 
 
 @api_view(['GET'])
-#@login_required
 def comment_list(request):
     comments = Comment.objects.all()
     serializer = CommentSerializer(comments, many=True)

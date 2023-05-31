@@ -135,13 +135,13 @@ DJOSER = {
     'LOGIN_FIELD': 'email',  # Customize the login field based on your model's field
     'USER_CREATE_PASSWORD_RETYPE': False,
     'SERIALIZERS': {
-        'user_create': 'account.serializers.MyUserCreateSerializer',  # Customize the serializer based on your model
-        'user': 'account.serializers.MyUserSerializer', 
+        'user_create': 'account.serializers.UserCreateSerializer',  # Customize the serializer based on your model
+       # 'user': 'account.serializers.MyUserSerializer', 
         'ACCESS_TOKEN_LIFETIME': 3600 , # Customize the serializer based on your model
     },
 }
 
-AUTH_USER_MODEL = 'account.MyUser'
+AUTH_USER_MODEL = 'account.UserAccount'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
