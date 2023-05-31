@@ -2,7 +2,7 @@ from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
 from django.contrib.auth import get_user_model
 from account.models import UserAccount
 
-User = get_user_model()
+
 
 
 # class MyUserCreateSerializer(UserCreateSerializer):
@@ -16,7 +16,7 @@ User = get_user_model()
 #         model = MyUser
 #         fields = ('email', 'first_name', 'last_name')
 
-
+User = get_user_model()
 class UserCreateSerializer(BaseUserCreateSerializer):
     class Meta(BaseUserCreateSerializer.Meta):
         model = UserAccount

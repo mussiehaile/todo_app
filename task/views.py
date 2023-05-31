@@ -1,6 +1,5 @@
 from rest_framework.decorators import api_view ,permission_classes 
 from django.core.exceptions import PermissionDenied 
-from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated ,AllowAny 
 from django.http import HttpResponse, HttpResponseForbidden
@@ -8,10 +7,12 @@ from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
 from .models import Comment,Task ,DueDate
 from .serializers import TaskSerializer,CommentSerializer ,DueDateSerializer
-
+from permissions import ISACTIVE ,ISDIRECTOR ,ISSTAFF
 
 ## task view
+
 @api_view(['GET'])
+@permission_classes([IsAuthenticated ,ISSTAFF])
 def task_list(request):
         print('oooooooo')
         tasks = Task.objects.all()
@@ -84,6 +85,7 @@ def comment_list(request):
     return Response(serializer.data)
 
 @api_view(['POST'])
+@permission_classes([IsAuthenticated ,ISDIRECTOR])
 def comment_create(request):
     serializer = CommentSerializer(data=request.data)
     if serializer.is_valid():
