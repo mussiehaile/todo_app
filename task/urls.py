@@ -19,7 +19,7 @@ urlpatterns = [
     path('com_with_task/', comment_wi_task, name='comment-wi-task'),
     
     path('comments/', comment_list, name='comment-list'),
-    path('comments/create', comment_create, name='comment-create'),
+    path('comments/create/', comment_create, name='comment-create'),
     path('comments/<int:pk>/', comment_detail, name='comments-detail'),
     path('comments/<int:pk>/update/', comment_update, name='comments-update'),
     path('comments/<int:pk>/delete/', comment_delete, name='comments-delete'),

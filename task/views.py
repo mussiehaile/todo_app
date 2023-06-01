@@ -30,9 +30,7 @@ def task_list(request):
     #     queryset = backend().filter_queryset(request, queryset, view=None)
     
     serializer = TaskSerializer(queryset, many=True)
-    search_fields = (
-        '^title',
-    )
+
     return Response(serializer.data)
     
 
@@ -181,7 +179,7 @@ def duedate_delete(request, pk):
 
 @api_view(['GET'])
 def task_list_with_comments(request):
-    tasks = Task.objects.prefetch_related('comment_set').all()
+    tasks = Task.objects.prefetch_related('comments').all()
     serializer = TaskSerializer(tasks, many=True, context={'request': request})
     return Response(serializer.data)
 
