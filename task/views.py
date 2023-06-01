@@ -1,30 +1,39 @@
 from rest_framework.decorators import api_view ,permission_classes 
 from django.core.exceptions import PermissionDenied 
+from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated ,AllowAny 
 from django.http import HttpResponse, HttpResponseForbidden
 from rest_framework.filters import SearchFilter
 from rest_framework.response import Response
-from .models import Comment,Task ,DueDate
+from .models import Comment,Task ,DueDate 
+from django.db.models import Q
 from .serializers import TaskSerializer,CommentSerializer ,DueDateSerializer
-from permissions import ISACTIVE ,ISDIRECTOR ,ISSTAFF
+from permissions import ISACTIVE ,ISDIRECTOR ,ISSTAFF 
+from django.http import HttpRequest 
+from django_filters import rest_framework as filters
 
 ## task view
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated ,ISSTAFF])
+#@permission_classes([IsAuthenticated ,ISSTAFF])
 def task_list(request):
-        print('oooooooo')
-        tasks = Task.objects.all()
-        filter_backend = SearchFilter()
-        search_fields = ['title', 'description']  # Specify the fields to search on
+    queryset = Task.objects.all()
+    # serializer_class = TaskSerializer
+    # filterset_class = filters.FilterSet  # Use the default FilterSet
 
-    # Apply search filtering
-        filtered_queryset = filter_backend.filter_queryset(request, tasks, view= None)
+    # filter_backends = [DjangoFilterBackend]
+    # filterset_fields = ['title', 'description']  # Specify the fields to filter on
+
+    # # Apply filters
+    # for backend in filter_backends:
+    #     queryset = backend().filter_queryset(request, queryset, view=None)
     
-        serializer = TaskSerializer(filtered_queryset, many=True)
-        #serializer = TaskSerializer(tasks, many=True)
-        return Response(serializer.data)
+    serializer = TaskSerializer(queryset, many=True)
+    search_fields = (
+        '^title',
+    )
+    return Response(serializer.data)
     
 
 
@@ -80,7 +89,12 @@ def task_delete(request, pk):
 
 @api_view(['GET'])
 def comment_list(request):
-    comments = Comment.objects.all()
+    query = request.GET.get('query', '')
+    if query:
+        comments = Comment.objects.filter(comment__icontains=query)
+    else:
+        comments = Comment.objects.all()
+    
     serializer = CommentSerializer(comments, many=True)
     return Response(serializer.data)
 
@@ -115,10 +129,21 @@ def comment_delete(request, pk):
     task.delete()
     return Response(status=204)
 
+
+
+
 #due date views
 @api_view(['GET'])
 def duedate_list(request):
-    duedates = DueDate.objects.all()
+    query = request.GET.get('query', '')
+    if query:
+        duedates = DueDate.objects.filter(
+            Q(task__icontains=query)|
+            Q(due_date__icontains =query)
+        )
+    else:
+        duedates = DueDate.objects.all()
+    
     serializer = DueDateSerializer(duedates, many=True)
     return Response(serializer.data)
 
