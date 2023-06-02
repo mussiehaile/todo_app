@@ -18,16 +18,11 @@ from django_filters import rest_framework as filters
 @api_view(['GET'])
 #@permission_classes([IsAuthenticated ,ISSTAFF])
 def task_list(request):
-    queryset = Task.objects.all()
-    # serializer_class = TaskSerializer
-    # filterset_class = filters.FilterSet  # Use the default FilterSet
-
-    # filter_backends = [DjangoFilterBackend]
-    # filterset_fields = ['title', 'description']  # Specify the fields to filter on
-
-    # # Apply filters
-    # for backend in filter_backends:
-    #     queryset = backend().filter_queryset(request, queryset, view=None)
+    query = request.GET.get('title', '')
+    if query:
+        queryset =Task.objects.filter(title__icontains=query)
+    else:
+        queryset = Task.objects.all()
     
     serializer = TaskSerializer(queryset, many=True)
 

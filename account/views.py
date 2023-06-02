@@ -1,14 +1,15 @@
-# from django.shortcuts import render
-# from rest_framework.decorators import api_view
-# from rest_framework.response import Response
-# from .models import MyUser
+#from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import UserAccount 
+from.serializers import UserAccountSerializers
 
 
-# @api_view(['GET'])
-# def user_list(request):
-#     users = MyUser.objects.all()
-#     serializer = MyUserSerializer(users, many=True)
-#     return Response(serializer.data)
+@api_view(['GET'])
+def user_list(request):
+    users = UserAccount.objects.all()
+    serializer = UserAccountSerializers(users, many=True)
+    return Response(serializer.data)
 
 # @api_view(['GET', 'DELETE'])
 # def user_detail(request, user_id):
