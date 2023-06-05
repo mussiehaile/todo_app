@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import Task, DueDate, Comment
-from account.serializers import UserAccountSerializers
+from account.serializers import UserAccountSerializers 
+from account.models import UserAccount
+
 class DueDateSerializer(serializers.ModelSerializer):
     class Meta:
         model = DueDate
@@ -15,14 +17,20 @@ class TasksSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-    task = TasksSerializer(read_only=True)
-    user = UserAccountSerializers()
+    task = TasksSerializer(read_only =True)
+    user = UserAccountSerializers(read_only =True)
     class Meta:
         model = Comment 
         fields = ['id', 'comment', 'created_at', 'task', 'user']
-        read_only_fields = ('created_at',)
+        read_only_fields = ('created_at','user')
         
-
+class CommentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment 
+        fields = ['id', 'comment', 'created_at', 'task', 'user']
+        read_only_fields = (['created_at'])
+        
+   
 class TaskSerializer(serializers.ModelSerializer):
     duedate_set = DueDateSerializer(many=True, read_only=True)
     comment_set = CommentSerializer(many=True, read_only=True)
@@ -30,8 +38,9 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'duedate_set', 'comment_set']
+        fields = ['id', 'title', 'description', 'duedate_set', 'comment_set','user']
         #fields = '__all__'
+
 
 
 

@@ -4,11 +4,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated ,AllowAny 
 from django.http import HttpResponse, HttpResponseForbidden
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import SearchFilter 
+from rest_framework import status
 from rest_framework.response import Response
 from .models import Comment,Task ,DueDate 
 from django.db.models import Q
-from .serializers import TaskSerializer,CommentSerializer ,DueDateSerializer
+from .serializers import TaskSerializer,CommentSerializer ,DueDateSerializer,CommentsSerializer
 from permissions import ISACTIVE ,ISDIRECTOR ,ISSTAFF 
 from django.http import HttpRequest 
 from django_filters import rest_framework as filters
@@ -29,53 +30,38 @@ def task_list(request):
     return Response(serializer.data)
     
 
-
-@api_view(['POST'])
-def task_create(request):
-    if request.user.has_perm('task.add_task'):
-        
-                             
-        serializer = TaskSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-        return Response(serializer.errors, status=400)
-    else:
-        raise PermissionDenied("You do not have permission to access this resource.")
-
-    
-
 @api_view(['GET'])
 def task_detail(request, pk):
     task = Task.objects.get(pk=pk)
     serializer = TaskSerializer(task)
     return Response(serializer.data)
 
+
+@api_view(['POST'])
+def task_create(request):
+    serializer = TaskSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data)
+    
+
 @api_view(['PUT'])
-@login_required
+#@login_required
 def task_update(request, pk):
     task = Task.objects.get(pk=pk)
     serializer = TaskSerializer(instance=task, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data)
-    return Response(serializer.errors, status=400)
+    serializer.is_valid(raise_exception =True)
+    serializer.save()
+    return Response(serializer.data)
+    
 
 
 @api_view(['DELETE'])
 def task_delete(request, pk):
-   print('oooooooo')
-   try:
         task = Task.objects.get(pk=pk)
-        
-        # Check if the user has permission to delete the task
-        if not request.user.has_perm('tasks.can_delete_task'):
-            return HttpResponseForbidden("You are not authorized to delete this task.")
-        
         task.delete()
-        return HttpResponse("Task deleted successfully.")
-   except Task.DoesNotExist:
-       return HttpResponseNotFound("Task not found.")
+        return Response(status=status.HTTP_204_NO_CONTENT)
+   
 
 ##comment_views 
 
@@ -92,13 +78,14 @@ def comment_list(request):
     return Response(serializer.data)
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated ,ISDIRECTOR])
+#@permission_classes([IsAuthenticated ,ISDIRECTOR])
 def comment_create(request):
-    serializer = CommentSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=201)
-    return Response(serializer.errors, status=400)
+    print(request.data)
+    serializer = CommentsSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    return Response(serializer.data, status=201)
+    
 
 
 @api_view(['GET'])
