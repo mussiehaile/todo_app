@@ -12,7 +12,8 @@ from django.db.models import Q
 from .serializers import TaskSerializer,CommentSerializer ,DueDateSerializer,CommentsSerializer
 from permissions import ISACTIVE ,ISDIRECTOR ,ISSTAFF 
 from django.http import HttpRequest 
-from django_filters import rest_framework as filters
+from django_filters import rest_framework as filters 
+from rest_framework.pagination import LimitOffsetPagination
 
 ## task view
 
@@ -25,9 +26,16 @@ def task_list(request):
     else:
         queryset = Task.objects.all()
     
-    serializer = TaskSerializer(queryset, many=True)
+     # Initialize the pagination class
+    paginator = LimitOffsetPagination()
 
-    return Response(serializer.data)
+    # Apply pagination to the queryset
+    paginated_queryset = paginator.paginate_queryset(queryset, request)
+
+    serializer = TaskSerializer(paginated_queryset, many=True)
+
+    # Return the paginated response
+    return paginator.get_paginated_response(serializer.data)
     
 
 @api_view(['GET'])
