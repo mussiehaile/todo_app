@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from rest_framework.permissions import IsAuthenticated ,AllowAny 
 from django.http import HttpResponse, HttpResponseForbidden
 from rest_framework.filters import SearchFilter 
-from rest_framework import status
+from rest_framework import status 
+from django.utils import timezone
 from rest_framework.response import Response
 from .models import Comment,Task ,DueDate 
 from django.db.models import Q
@@ -124,14 +125,12 @@ def comment_delete(request, pk):
 @api_view(['GET'])
 def duedate_list(request):
     query = request.GET.get('query', '')
+    
     if query:
-        duedates = DueDate.objects.filter(
-            Q(task__icontains=query)|
-            Q(due_date__icontains =query)
-        )
+        duedates = DueDate.objects.filter(due_date__icontains=query)
     else:
         duedates = DueDate.objects.all()
-    
+        
     serializer = DueDateSerializer(duedates, many=True)
     return Response(serializer.data)
 
